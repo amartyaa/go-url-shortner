@@ -1,4 +1,4 @@
-package dns
+package router
 
 import (
 	"github.com/amartyaa/go-url-shortner/db"
