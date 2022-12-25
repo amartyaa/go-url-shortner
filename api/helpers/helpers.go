@@ -28,5 +28,5 @@ func LoopDomain(url string) bool {
 }
 
 func GenerateID() string {
-	return uuid.NewV4().String()
+	return uuid.New().String()[0:6]
 }

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/amartyaa/url-shortner/db"
-	"github.com/amartyaa/url-shortner/helpers"
+	"github.com/amartyaa/go-url-shortner/db"
+	"github.com/amartyaa/go-url-shortner/helpers"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/asaskevich/govalidator"
@@ -68,7 +68,7 @@ func Shorten(c *fiber.Ctx) error {
 	}
 	//IMPLEMENT HTTPS/SSLv3/SSLv2 CHECK
 
-	req.URL = helpers.EnforeceHTTPS(req.URL)
+	req.Url = helpers.EnforeceHTTPS(req.Url)
 
 	//IMPLEMENT CUSTOM SHORT URL
 
@@ -82,27 +82,40 @@ func Shorten(c *fiber.Ctx) error {
 	r1 := db.Connect(0)
 	defer r1.Close()
 
-	val, err := r1.Get(db.Dbctx, id).Result()
+	val, err = r1.Get(db.Dbctx, id).Result()
 	if err == redis.Nil {
-		_ = r1.Set(db.Dbctx, id, req.URL, req.Expiry*time.Second).Err()
+		_ = r1.Set(db.Dbctx, id, req.Url, req.Expiry*time.Second).Err()
 	} else if err != nil {
 		return c.Status(502).JSON(fiber.Map{
 			"error": "Internal server error",
 		})
-	} else if val != ""{
+	} else if val != "" {
 		return c.Status(409).JSON(fiber.Map{
 			"error": "Shortened URL already exists",
 			"url":   val,
 		})
+	}
 
-	err = r1.Set(db.Dbctx, id, req.URL, req.Expiry*3600*time.Second).Err()
+	err = r1.Set(db.Dbctx, id, req.Url, req.Expiry*3600*time.Second).Err()
 	if err != nil {
 		return c.Status(502).JSON(fiber.Map{
 			"error": "Unable to shorten URL",
-			"url":   req.URL,
-			"id":	id,
+			"url":   req.Url,
+			"id":    id,
 		})
 	}
-	r2.Decr(db.Dbctx, c.IP())
-	return c.JSON(req)
+
+	resp := response{
+		Url:             req.Url,
+		CustomShort:     os.Getenv("DOMAIN") + "/" + id,
+		Expiry:          req.Expiry,
+		XRateRemaining:  30,
+		XRateLimitReset: 30 * 60 * time.Second,
+	}
+
+	xrr, _ := r2.Decr(db.Dbctx, c.IP()).Result()
+	resp.XRateRemaining = int(xrr)
+	resp.XRateLimitReset = r2.TTL(db.Dbctx, c.IP()).Val()
+
+	return c.Status(200).JSON(resp)
 }

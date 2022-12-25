@@ -1,7 +1,7 @@
 package dns
 
 import (
-	"github.com/amartyaa/url-shortner/db"
+	"github.com/amartyaa/go-url-shortner/db"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 )

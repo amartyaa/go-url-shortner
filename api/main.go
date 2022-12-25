@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/amartyaa/url-shortner/dns"
+	"github.com/amartyaa/go-url-shortner/dns"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
