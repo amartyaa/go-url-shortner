@@ -107,7 +107,7 @@ func Shorten(c *fiber.Ctx) error {
 
 	resp := response{
 		Url:             req.Url,
-		CustomShort:     os.Getenv("DOMAIN") + "/" + id,
+		CustomShort:     os.Getenv("APP_HOST") + "/" + id,
 		Expiry:          req.Expiry,
 		XRateRemaining:  30,
 		XRateLimitReset: 30 * 60 * time.Second,
