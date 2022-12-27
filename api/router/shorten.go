@@ -58,12 +58,12 @@ func Shorten(c *fiber.Ctx) error {
 	//IMPLEMENT URL VALIDATION
 	if !govalidator.IsURL(req.Url) {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid URL",
+			"error": "Invalid URL goValidator",
 		})
 	}
 	if !helpers.LoopDomain(req.Url) {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid URL",
+			"error": "Invalid URL LoopDomain",
 		})
 	}
 	//IMPLEMENT HTTPS/SSLv3/SSLv2 CHECK

@@ -1,16 +1,26 @@
 package router
 
 import (
+	"fmt"
+
 	"github.com/amartyaa/go-url-shortner/db"
+	"github.com/amartyaa/go-url-shortner/helpers"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Resolve(c *fiber.Ctx) error {
-	url := c.Params("url")
+	fmt.Println("Resolve")
+	url := c.Request().URI().QueryString()
+	param := helpers.ValidParams(string(url))
+	if !param.Check {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "Invalid request",
+		})
+	}
 	client := db.Connect(0)
 	defer client.Close()
-	val, err := client.Get(db.Dbctx, url).Result()
+	val, err := client.Get(db.Dbctx, param.URL).Result()
 	if err == redis.Nil {
 		return c.Status(404).JSON(fiber.Map{
 			"error": "Shortened URL not found",
