@@ -12,12 +12,18 @@ import (
 func Resolve(c *fiber.Ctx) error {
 	fmt.Println("Resolve")
 	url := c.Request().URI().QueryString()
-	param := helpers.ValidParams(string(url))
+	param_chan := make(chan helpers.Params)
+	go func() {
+		param_chan <- helpers.ValidParams(string(url))
+		close(param_chan)
+	}()
+	param := <-param_chan
 	if !param.Check {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "Invalid request",
 		})
 	}
+	fmt.Println(param.URL)
 	client := db.Connect(0)
 	defer client.Close()
 	val, err := client.Get(db.Dbctx, param.URL).Result()

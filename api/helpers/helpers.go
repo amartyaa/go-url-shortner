@@ -43,13 +43,16 @@ func ValidParams(url string) Params {
 	var params Params
 	params.URL = url
 	params.Check = false
+	// if strings.Contains(url, os.Getenv("APP_HOST")) {
+	// 	url = strings.Split(url, os.Getenv("APP_HOST"))[1]
+	// } 
 	if strings.Contains(url, "=") {
 		url = strings.Split(url, "=")[1]
-		params.Check = true
-		if url[0] == '/' {
+		if strings.Contains(url,"/")  {
 			url = strings.Split(string(url), "/")[1]
-			params.URL = url
 		}
+		params.Check = true
+		params.URL = url
 	}
 
 	return params
