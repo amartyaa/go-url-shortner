@@ -13,7 +13,7 @@ var Dbctx = context.Background()
 
 func Connect(db int) *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     ":6379",
+		Addr:     os.Getenv("REDIS_HOST"),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       db,
 	})
