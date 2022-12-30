@@ -32,6 +32,8 @@ jobs:
       id-token: write
 
     steps:
+      - name: cd to API directory
+        run: cd api
       - name: Checkout repository
         uses: actions/checkout@v3
 
