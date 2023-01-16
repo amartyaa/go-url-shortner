@@ -12,6 +12,7 @@ import (
 func Routes(app *fiber.App) {
 	app.Get("/shorten", router.Resolve)
 	app.Post("/shorten", router.Shorten)
+	app.Get("/*", router.Redirect)
 }
 
 func main() {

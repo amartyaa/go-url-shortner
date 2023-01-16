@@ -30,11 +30,13 @@ type response struct {
 }
 
 func Shorten(c *fiber.Ctx) error {
+	fmt.Println("Shorten")
 	var req request
 	if err := c.BodyParser(&req); err != nil {
+		fmt.Println(req)
 		fmt.Println(err)
 		return c.Status(400).JSON(fiber.Map{
-			"error": "Invalid request",
+			"error": "Invalid Request bole na",
 		})
 	}
 	//IMPLEMENT RATE LIMITING

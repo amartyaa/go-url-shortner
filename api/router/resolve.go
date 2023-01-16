@@ -19,6 +19,8 @@ func Resolve(c *fiber.Ctx) error {
 	}()
 	param := <-param_chan
 	if !param.Check {
+		fmt.Println(param.URL)
+		fmt.Println("Invalid request")
 		return c.Status(400).JSON(fiber.Map{
 			"error": "Invalid request",
 		})
@@ -36,11 +38,20 @@ func Resolve(c *fiber.Ctx) error {
 			"error": "Internal server error",
 		})
 	}
-
+	fmt.Println(val)
 	//Log the request
 	client2 := db.Connect(1)
 	defer client2.Close()
 	client2.Incr(db.Dbctx, "total_requests")
-
-	return c.Redirect(val, 301) //301 is the status code for permanent redirect
+	resp := response{
+		Url:             val,
+		CustomShort:     param.URL,
+		Expiry:          client.TTL(db.Dbctx, param.URL).Val(),
+		XRateRemaining:  0,
+		XRateLimitReset: 0,
+	}
+	xrr, _ := client2.Decr(db.Dbctx, c.IP()).Result()
+	resp.XRateRemaining = int(xrr)
+	resp.XRateLimitReset = client2.TTL(db.Dbctx, c.IP()).Val()
+	return c.Status(200).JSON(resp)
 }

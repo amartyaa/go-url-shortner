@@ -1,6 +1,9 @@
+[![Docker](https://github.com/amartyaa/go-url-shortner/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/amartyaa/go-url-shortner/actions/workflows/docker-publish.yml)
+
 # go-url-shortner
 Basic URL shortner 
 made with go, fiber & redis
+
 
 ### Containers:- 
 1. Redis
